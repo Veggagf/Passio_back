@@ -2,7 +2,6 @@ const jwt = require('jsonwebtoken');
 const config = require('../config/env');
 const { User } = require('../models');
 
-// Verifica el token JWT y autentica al usuario
 const authenticateToken = async (req, res, next) => {
     try {
         const authHeader = req.headers['authorization'];
@@ -42,7 +41,6 @@ const authenticateToken = async (req, res, next) => {
     }
 };
 
-// Verifica si el usuario tiene uno de los roles permitidos
 const authorizeRoles = (...roles) => {
     return (req, res, next) => {
         if (!req.user) {
