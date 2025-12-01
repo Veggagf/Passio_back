@@ -13,7 +13,12 @@ const validateRequest = (req, res, next) => {
 };
 
 const loginValidation = [
-    body('identifier').notEmpty().withMessage('El usuario o email es requerido'),
+    body().custom((value, { req }) => {
+        if (!req.body.identifier && !req.body.email && !req.body.username) {
+            throw new Error('El usuario o email es requerido');
+        }
+        return true;
+    }),
     body('password').notEmpty().withMessage('La contraseña es requerida'),
     validateRequest,
 ];

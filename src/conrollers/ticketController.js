@@ -27,7 +27,7 @@ exports.createTicket = async (req, res) => {
         const ticket = await Ticket.create({
             name,
             price,
-            quantity_available: stock, 
+            quantity_available: stock,
             event_id
         });
 
@@ -146,7 +146,7 @@ exports.buyTicket = async (req, res) => {
 
         const sales = [];
         for (let i = 0; i < quantity; i++) {
-            const qr_code = uuidv4(); 
+            const qr_code = uuidv4();
 
             const sale = await Sale.create({
                 user_id: userId,
@@ -329,5 +329,46 @@ exports.getTicketByQR = async (req, res) => {
     } catch (error) {
         console.error('Error al obtener boleto:', error);
         res.status(500).json({ message: 'Error al obtener boleto', error: error.message });
+    }
+};
+
+exports.getAccessLogsByEvent = async (req, res) => {
+    try {
+        const { eventId } = req.params;
+
+        const logs = await AccessLog.findAll({
+            include: [
+                {
+                    model: Sale,
+                    as: 'sale',
+                    required: true,
+                    include: [
+                        {
+                            model: Ticket,
+                            as: 'ticket',
+                            where: { event_id: eventId },
+                            required: true,
+                            include: [{ model: Event, as: 'event' }]
+                        },
+                        {
+                            model: User,
+                            as: 'buyer',
+                            attributes: ['id', 'name', 'email']
+                        }
+                    ]
+                },
+                {
+                    model: User,
+                    as: 'staff',
+                    attributes: ['id', 'name', 'email']
+                }
+            ],
+            order: [['access_time', 'DESC']]
+        });
+
+        res.json(logs);
+    } catch (error) {
+        console.error('Error al obtener logs de acceso:', error);
+        res.status(500).json({ message: 'Error al obtener logs de acceso', error: error.message });
     }
 };
