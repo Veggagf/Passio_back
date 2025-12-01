@@ -28,7 +28,7 @@
 | Componente        | Tecnología        | Repositorio                              |
 | ----------------- | ----------------- | ---------------------------------------- |
 | **Frontend**      | React + Vite      | https://github.com/Veggagf/Passio_front  |
-| **Backend**       | Node.js + Express | https://github.com/Veggagf/passio_nodejs |
+| **Backend**       | Node.js + Express | https://github.com/Veggagf/Passio_back   |
 | **Base de Datos** | MySQL             | -                                        |
 
 ---
