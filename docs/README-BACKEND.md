@@ -140,8 +140,8 @@ Antes de comenzar, asegúrate de tener instalado:
 1. **Clonar el repositorio**
 
    ```bash
-   git clone https://github.com/Veggagf/passio_nodejs.git
-   cd passio_nodejs
+   git clone https://github.com/Veggagf/Passio_back.git
+   cd Passio_back
    ```
 
 2. **Instalar dependencias**
