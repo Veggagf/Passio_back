@@ -186,6 +186,61 @@ Base: `http://localhost:3000`
 ### Diagrama ER
 
 ```mermaid
+erDiagram
+    USERS {
+        INT id PK
+        VARCHAR name
+        VARCHAR email
+        VARCHAR password
+        ENUM role
+        DATETIME created_at
+        DATETIME updated_at
+        VARCHAR username
+    }
+
+    EVEN {
+        INT id PK
+        VARCHAR title
+        TEXT description
+        DATETIME date
+        VARCHAR location
+        INT capacity
+        VARCHAR image_url
+        INT organizer_id FK
+        DATETIME created_at
+    }
+
+    TICKETS {
+        INT id PK
+        INT event_id FK
+        VARCHAR name
+        DECIMAL price
+        INT quantity_available
+    }
+
+    SALES {
+        INT id PK
+        INT user_id FK
+        INT ticket_id FK
+        DATETIME purchase_date
+        VARCHAR qr_code
+        ENUM status
+    }
+
+    ACCESS_LOGS {
+        INT id PK
+        INT sale_id FK
+        INT staff_id FK
+        DATETIME scanned_at
+    }
+
+    %% RELACIONES
+    USERS ||--o{ EVEN : organiza
+    EVEN ||--o{ TICKETS : tiene
+    USERS ||--o{ SALES : compra
+    TICKETS ||--o{ SALES : vendido_en
+    SALES ||--o{ ACCESS_LOGS : registra
+    USERS ||--o{ ACCESS_LOGS : escaneo
 
 ```
 
