@@ -337,139 +337,165 @@ flowchart TB
 
 ```mermaid
 flowchart TB
-    subgraph Browser["🌐 Navegador"]
-        HTML["index.html<br/>(Entry Point)"]
+
+  subgraph Browser["Navegador"]
+    HTML["index.html\n(entry point)"]
+  end
+
+  subgraph ReactApp["React Application"]
+    Main["main.jsx"]
+    App["App.jsx"]
+    ErrorBoundary["ErrorBoundary"]
+    
+    subgraph Router["Router (react-router-dom)"]
+      AppRouter["AppRouter.jsx"]
+      RoutesFile["routes.js"]
+      ProtectedRoute["ProtectedRoute.jsx\n(role-based guard)"]
     end
 
-    subgraph ReactApp["⚛️ React Application"]
-        Main["main.jsx"]
-        App["App.jsx"]
+    subgraph Pages["Pages / Views"]
+      subgraph PublicPages["Páginas Públicas"]
+        HomePage["HomePage"]
+        LoginPage["LoginPage"]
+        RegisterPage["RegisterPage"]
+      end
 
-        subgraph Router["🛣️ Router (react-router-dom)"]
-            AppRouter["AppRouter. jsx"]
-            Routes["routes. js"]
-            ProtectedRoute["ProtectedRoute.jsx"]
-        end
+      subgraph AuthPages["Páginas Autenticadas"]
+        EventsListPage["EventsListPage"]
+        EventsListUser["EventsListUser"]
+        EventsDashboard["EventsDashboardPage"]
+        EventsDashboardOrg["EventsDashboardPageOrganizer"]
+        EventsDashboardStaff["EventsDashboardPageStaff"]
+        Boletos["Boletos (purchase)"]
+        CreateEventModal["CreateEventModal / createEventPage"]
+      end
 
-        subgraph Pages["📄 Pages"]
-            subgraph PublicPages["Páginas Públicas"]
-                HomePage["HomePage"]
-                LoginPage["LoginPage"]
-                RegisterPage["RegisterPage"]
-            end
-
-            subgraph AuthPages["Páginas Autenticadas"]
-                EventsListPage["EventsListPage"]
-                EventsListUser["EventsListUser"]
-                EventsDashboard["EventsDashboardPage"]
-                EventsDashboardOrg["EventsDashboardPageOrganizer"]
-                EventsDashboardStaff["EventsDashboardPageStaff"]
-                Boletos["Boletos"]
-                CreateEventModal["CreateEventModal"]
-            end
-
-            subgraph AdminPages["Páginas Admin"]
-                UserManagement["UserManagementPage"]
-                RegisterUser["RegisterUser"]
-            end
-        end
-
-        subgraph Components["🧩 Components"]
-            subgraph Layout["Layout"]
-                Navbar["Navbar"]
-                Footer["Footer"]
-                LayoutComp["Layout"]
-            end
-
-            subgraph Auth["Auth Components"]
-                LoginForm["LoginForm"]
-                RegisterForm["RegisterForm"]
-            end
-
-            subgraph Common["Common Components"]
-                Button["Button"]
-                Input["Input"]
-                Card["Card"]
-                CardInfo["EventInfoCard"]
-                Table["Table"]
-                Loading["Loading"]
-                ErrorBoundary["ErrorBoundary"]
-                Modal["UserModal"]
-            end
-
-            subgraph Events["Event Components"]
-                EventCard["EventCard"]
-            end
-
-            subgraph Users["User Components"]
-                UserTable["UserTable"]
-                UserForm["UserForm"]
-                UserFormEdit["UserFormEdit"]
-            end
-        end
-
-        subgraph API["🔌 API Layer"]
-            AxiosInstance["axios. js<br/>(Axios Instance + Interceptors)"]
-
-            subgraph Services["Services"]
-                AuthService["authService. js<br/>- login()<br/>- register()<br/>- getCurrentUser()<br/>- logout()"]
-                EventService["eventService. js<br/>- getEvents()<br/>- getEventById()<br/>- createEvent()<br/>- updateEvent()<br/>- deleteEvent()"]
-                UserService["userService. js<br/>- getUsers()<br/>- getUserById()<br/>- createUser()<br/>- updateUser()<br/>- deleteUser()"]
-                TicketService["ticketService.js<br/>- getTickets()<br/>- buyTicket()<br/>- getTicketsByEvent()"]
-            end
-        end
-
-        subgraph State["📦 State Management (Zustand)"]
-            AuthStore["authStore<br/>- user, token, role<br/>- login(), logout()"]
-            UserStore["userStore<br/>- users[]<br/>- CRUD operations"]
-        end
-
-        subgraph Utils["🛠️ Utilities"]
-            Constants["constants.js<br/>- ROLES<br/>- ENDPOINTS"]
-        end
-
-        subgraph Styles["🎨 Styling"]
-            TailwindCSS["Tailwind CSS"]
-            IndexCSS["index.css"]
-            AppCSS["App.css"]
-        end
-
-        subgraph Assets["🖼️ Assets"]
-            Images["Imágenes<br/>/assets/imagenes/"]
-        end
+      subgraph AdminPages["Páginas Admin"]
+        UserManagement["UserManagementPage"]
+        RegisterUser["RegisterUser"]
+      end
     end
 
-    subgraph Backend["🔙 Backend API"]
-        API_Server["Express Server<br/>(localhost:3000/api)"]
+    subgraph Components["Reusable Components"]
+      subgraph Layout["Layout"]
+        Navbar["Navbar"]
+        Footer["Footer"]
+        LayoutComp["Layout wrapper"]
+      end
+
+      subgraph AuthComponents["Auth"]
+        LoginForm["LoginForm"]
+        RegisterForm["RegisterForm"]
+        ProtectedRouteComp["ProtectedRoute (component)"]
+      end
+
+      subgraph Common["Common"]
+        Button["Button"]
+        Input["Input"]
+        Card["Card"]
+        CardInfo["EventInfoCard"]
+        Table["Table"]
+        Loading["Loading"]
+        Modal["Modal / UserModal / EventModal"]
+        ErrorBoundaryComp["ErrorBoundary"]
+      end
+
+      subgraph EventsComp["Events"]
+        EventCard["EventCard"]
+      end
+
+      subgraph UsersComp["Users"]
+        UserTable["UserTable"]
+        UserForm["UserForm"]
+        UserFormEdit["UserFormEdit"]
+      end
     end
 
-    HTML --> Main
-    Main --> ErrorBoundary
-    ErrorBoundary --> App
-    App --> AppRouter
-    AppRouter --> Routes
-    AppRouter --> ProtectedRoute
+    subgraph API["API Layer (src/api)"]
+      AxiosInstance["axios.js\n(instance + interceptors)"]
+      subgraph Services["Services"]
+        AuthService["authService.js\n(login, register, me, logout)"]
+        EventService["eventService.js\n(getEvents, getEventById, createEvent, updateEvent, deleteEvent)"]
+        TicketService["ticketService.js\n(getTickets, buyTicket, validate)"]
+        UserService["userService.js\n(getUsers, CRUD)"]
+      end
+    end
 
-    ProtectedRoute --> AuthPages
-    ProtectedRoute --> AdminPages
-    Routes --> PublicPages
+    subgraph State["State (Zustand stores)"]
+      AuthStore["authStore.js\n(user, token, role, login, logout)"]
+      EventStore["eventStore.js\n(events list, current event)"]
+      UserStore["userStore.js\n(users[], CRUD helpers)"]
+    end
 
-    LoginForm --> AuthService
-    RegisterForm --> AuthService
-    EventsListPage --> EventService
-    UserManagement --> UserService
-    Boletos --> TicketService
+    subgraph Utils["Utilities"]
+      Constants["constants.js\n(ROLES, ENDPOINTS)"]
+      Helpers["helpers.js\n(utility functions)"]
+    end
 
-    AuthService --> AxiosInstance
-    EventService --> AxiosInstance
-    UserService --> AxiosInstance
-    TicketService --> AxiosInstance
+    subgraph Styles["Styling"]
+      Tailwind["Tailwind CSS"]
+      DaisyUI["DaisyUI"]
+      IndexCSS["index.css"]
+      AppCSS["App.css"]
+    end
 
-    AxiosInstance -->|HTTP| API_Server
+    subgraph Assets["Assets"]
+      Images["/assets/imagenes\n(images, icons)"]
+    end
+  end
 
-    LoginForm --> AuthStore
-    ProtectedRoute --> AuthStore
-    Components --> TailwindCSS
+  subgraph Backend["Backend API"]
+    API_Server["Express API\nhttp://localhost:3000/api"]
+  end
+
+  %% Main render flow
+  HTML --> Main
+  Main --> ErrorBoundary
+  ErrorBoundary --> App
+  App --> AppRouter
+  AppRouter --> RoutesFile
+  AppRouter --> ProtectedRoute
+
+  %% Routing & pages
+  ProtectedRoute --> AuthPages
+  ProtectedRoute --> AdminPages
+  RoutesFile --> PublicPages
+
+  %% Components -> services / stores
+  LoginForm --> AuthService
+  RegisterForm --> AuthService
+  EventsListPage --> EventService
+  EventsListUser --> EventService
+  EventsDashboard --> EventService
+  EventsDashboardOrg --> EventService
+  EventsDashboardStaff --> EventService
+  CreateEventModal --> EventService
+  Boletos --> TicketService
+  UserManagement --> UserService
+  UserForm --> UserService
+
+  %% Services -> axios
+  AuthService --> AxiosInstance
+  EventService --> AxiosInstance
+  TicketService --> AxiosInstance
+  UserService --> AxiosInstance
+
+  %% Axios -> backend
+  AxiosInstance -->|HTTP| API_Server
+
+  %% Stores usage
+  LoginForm --> AuthStore
+  ProtectedRouteComp --> AuthStore
+  EventsListPage --> EventStore
+  EventsDashboard --> EventStore
+  UserManagement --> UserStore
+
+  %% Utilities & styling
+  Components --> Tailwind
+  Components --> DaisyUI
+  Pages --> Images
+  Pages --> Constants
+  Pages --> Helpers
 ```
 
 ### Diagrama de flujo
