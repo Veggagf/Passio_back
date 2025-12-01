@@ -2,6 +2,124 @@ const { Ticket, Sale, Event, User, AccessLog } = require('../models');
 const { v4: uuidv4 } = require('uuid');
 const { Op } = require('sequelize');
 
+exports.createTicket = async (req, res) => {
+    try {
+        const { role } = req.user;
+        if (role !== 'administrador' && role !== 'organizador') {
+            return res.status(403).json({ message: 'No tienes permisos para crear tickets' });
+        }
+
+        const { name, price, stock, event_id, description } = req.body;
+
+        if (!name || !price || !stock || !event_id) {
+            return res.status(400).json({ message: 'Faltan campos requeridos (name, price, stock, event_id)' });
+        }
+
+        const event = await Event.findByPk(event_id);
+        if (!event) {
+            return res.status(404).json({ message: 'Evento no encontrado' });
+        }
+
+        if (role === 'organizador' && event.organizer_id !== req.user.id) {
+            return res.status(403).json({ message: 'No tienes permisos para agregar tickets a este evento' });
+        }
+
+        const ticket = await Ticket.create({
+            name,
+            price,
+            quantity_available: stock, 
+            event_id
+        });
+
+        res.status(201).json({
+            message: 'Ticket creado exitosamente',
+            ticket
+        });
+    } catch (error) {
+        console.error('Error al crear ticket:', error);
+        res.status(500).json({ message: 'Error al crear ticket', error: error.message });
+    }
+};
+
+exports.getTicketsByEvent = async (req, res) => {
+    try {
+        const { eventId } = req.params;
+
+        const tickets = await Ticket.findAll({
+            where: { event_id: eventId }
+        });
+
+        res.json(tickets);
+    } catch (error) {
+        console.error('Error al obtener tickets del evento:', error);
+        res.status(500).json({ message: 'Error al obtener tickets', error: error.message });
+    }
+};
+
+exports.updateTicket = async (req, res) => {
+    try {
+        const { role } = req.user;
+        const { id } = req.params;
+        const { name, price, stock } = req.body;
+
+        const ticket = await Ticket.findByPk(id, {
+            include: [{ model: Event, as: 'event' }]
+        });
+
+        if (!ticket) {
+            return res.status(404).json({ message: 'Ticket no encontrado' });
+        }
+
+        if (role !== 'administrador') {
+            if (role !== 'organizador' || ticket.event.organizer_id !== req.user.id) {
+                return res.status(403).json({ message: 'No tienes permisos para editar este ticket' });
+            }
+        }
+
+        await ticket.update({
+            name: name || ticket.name,
+            price: price || ticket.price,
+            quantity_available: stock !== undefined ? stock : ticket.quantity_available
+        });
+
+        res.json({
+            message: 'Ticket actualizado exitosamente',
+            ticket
+        });
+    } catch (error) {
+        console.error('Error al actualizar ticket:', error);
+        res.status(500).json({ message: 'Error al actualizar ticket', error: error.message });
+    }
+};
+
+exports.deleteTicket = async (req, res) => {
+    try {
+        const { role } = req.user;
+        const { id } = req.params;
+
+        const ticket = await Ticket.findByPk(id, {
+            include: [{ model: Event, as: 'event' }]
+        });
+
+        if (!ticket) {
+            return res.status(404).json({ message: 'Ticket no encontrado' });
+        }
+
+        if (role !== 'administrador') {
+            if (role !== 'organizador' || ticket.event.organizer_id !== req.user.id) {
+                return res.status(403).json({ message: 'No tienes permisos para eliminar este ticket' });
+            }
+        }
+
+        await ticket.destroy();
+
+        res.json({ message: 'Ticket eliminado exitosamente' });
+    } catch (error) {
+        console.error('Error al eliminar ticket:', error);
+        res.status(500).json({ message: 'Error al eliminar ticket', error: error.message });
+    }
+};
+
 exports.buyTicket = async (req, res) => {
     try {
         const { id: userId } = req.user;
