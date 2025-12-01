@@ -123,6 +123,7 @@ exports.getEventDashboard = async (req, res, next) => {
                 date: event.date,
                 location: event.location,
                 capacity: event.capacity,
+                image_url: event.image_url,
             },
             statistics: {
                 total_tickets_sold: totalTicketsSold,
