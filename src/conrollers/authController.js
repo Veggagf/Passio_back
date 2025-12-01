@@ -78,9 +78,7 @@ exports.login = async (req, res, next) => {
                 message: 'Credenciales inválidas',
             });
         }
-
         const isPasswordValid = await user.comparePassword(password);
-
         if (!isPasswordValid) {
             return res.status(401).json({
                 success: false,
@@ -103,6 +101,7 @@ exports.login = async (req, res, next) => {
             },
         });
     } catch (error) {
+        console.error('Login error:', error);
         next(error);
     }
 };
