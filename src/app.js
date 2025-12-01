@@ -7,7 +7,7 @@ const config = require('./config/env');
 const errorHandler = require('./middleware/errorHandler');
 
 const authRoutes = require('./routes/auth');
-const userRoutes = require('./routes/users');
+const userRoutes = require('./routes/user');
 const eventRoutes = require('./routes/events');
 const ticketRoutes = require('./routes/tickets');
 const dashboardRoutes = require('./routes/dashboard');
